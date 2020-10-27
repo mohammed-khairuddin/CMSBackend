@@ -13,6 +13,9 @@ const KinMaster = db.kinMaster;
 const Observations = db.observations;
 const salutationMaster = db.salutationMaster;
 
+const generalClinicManagement = db.generalClinicManagement;
+const generalDoctorManagement = db.generalDoctorManagement;
+
 const {sendEmail,textMessage} = require('../routes/registrationRoutes')
 
 //const UUID = require('uuid-generate')
@@ -801,39 +804,81 @@ exports.getPatient = (req, res) => {
 	})
 }
 
-exports.getClinics = (req, res) => {
-	ClinicManagement.findOne({
-		where: {id :req.params.id},
+// exports.getClinics = (req, res) => {
+// 	ClinicManagement.findOne({
+// 		where: {id :req.params.id},
 		
-	}).then(doctor => {
-		res.status(200).json({
-			"description": "Clinic Content Page",
-			"doctor": doctor
-		});
-	}).catch(err => {
-		res.status(500).json({
-			"description": "Can not access Clinic Page",
-			"error": err
-		});
-	})
-}
+// 	}).then(doctor => {
+// 		res.status(200).json({
+// 			"description": "Clinic Content Page",
+// 			"doctor": doctor
+// 		});
+// 	}).catch(err => {
+// 		res.status(500).json({
+// 			"description": "Can not access Clinic Page",
+// 			"error": err
+// 		});
+// 	})
+// }
 
-exports.getDoctors = (req, res) => {
-	DoctorManagement.findOne({
-		where: {id :req.params.id},
+exports.getClinics =  async(req, res) => {
+	const doctor= await	db.clinicManagement.findOne({
+		   where:{id :req.params.id},
+		   })
 		
-	}).then(doctor => {
-		res.status(200).json({
-			"description": "Doctor Content Page",
-			"doctor": doctor
-		});
-	}).catch(err => {
-		res.status(500).json({
-			"description": "Can not access Doctor Page",
-			"error": err
-		});
-	})
-}
+	const country=await db.country.findAll({where:{}});	
+	const state=await db.state.findAll({where:{}});	
+	const services = await db.hospitalService.findAll({where:{}});
+	const hospitalSpeciality = await db.hospitalSpeciality.findAll({where:{}});
+	const hospitalType = await db.hospitalType.findAll({where:{}});
+		   return res.json({"doctor":doctor,
+			"country":country,
+			"state":state,
+			"hospitalService":services,
+			"hospitalSpeciality":hospitalSpeciality,
+			"hospitalType":hospitalType,
+		})
+	   }
+
+
+// exports.getDoctors = (req, res) => {
+// 	const salutation=await db.salutationMaster.findAll({where:{}});
+// 	const branch=await db.branchMaster.findAll({where:{}});	
+// 	DoctorManagement.findOne({
+// 		where: {id :req.params.id},
+		
+// 	}).then(doctor => {
+// 		res.status(200).json({
+// 			"description": "Doctor Content Page",
+// 			"doctor": doctor,
+// 			"salutation":salutation,
+// 			"branch":branch,
+
+// 		});
+// 	}).catch(err => {
+// 		res.status(500).json({
+// 			"description": "Can not access Doctor Page",
+// 			"error": err
+// 		});
+// 	})
+// }
+
+exports.getDoctors =  async(req, res) => {
+	const doctor= await	db.doctorManagement.findOne({
+		   where:{id :req.params.id},
+		   })
+	const salutation=await db.salutationMaster.findAll({where:{}});
+	const branch=await db.branchMaster.findAll({where:{}});	
+	const country=await db.country.findAll({where:{}});	
+	const state=await db.state.findAll({where:{}});	
+
+		   return res.json({"doctor":doctor,"salutation":salutation,
+		   "branch":branch,
+			"country":country,
+			"state":state,
+		})
+	   }
+
 
 //master
 exports.master = (req,res) => {
@@ -2143,6 +2188,8 @@ console.log(req.body.type);
 			const hospitalType = await db.hospitalType.findAll({where:{}})
 			const country = await db.country.findAll({where:{}})
 			const state = await db.state.findAll({where:{}})
+			const salutation = await db.salutationMaster.findAll({where:{}})
+			const branch = await db.branchMaster.findAll({where:{}})
 				
 				return res.send({
 				hospitalSpeciality:hospitalSpeciality,
@@ -2150,7 +2197,8 @@ console.log(req.body.type);
 				hostipalType:hospitalType,
 				country:country,
 				state:state,	
-				
+				salutation:salutation,
+				branch:branch,
 				})
 					}
 					catch{err => {
@@ -2158,3 +2206,118 @@ console.log(req.body.type);
 					}}
 			
 		}
+
+////////////////// GENERAL CLINI DOCTOR////////////////////////		
+
+exports.getGeneralAllClinics = (req, res) => {
+	generalClinicManagement.findAll({
+		where: {role: 'CLINIC'},
+		order: [
+			[Sequelize.literal('id'), 'desc']
+	 ]
+	}).then(clinic => {
+		res.status(200).json({
+			"description": "ClinicManagement Content Page",
+			"clinic": clinic,
+			
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"description": "Can not access ClinicManagement Page",
+			"error": err
+		});
+	})
+}
+
+exports.getGeneralClinics =  async(req, res) => {
+	const doctor= await	db.generalClinicManagement.findOne({
+		   where:{id :req.params.id},
+		   })
+		
+	const country=await db.country.findAll({where:{}});	
+	const state=await db.state.findAll({where:{}});	
+	const services = await db.hospitalService.findAll({where:{}});
+	const hospitalSpeciality = await db.hospitalSpeciality.findAll({where:{}});
+	const hospitalType = await db.hospitalType.findAll({where:{}});
+		   return res.json({"doctor":doctor,
+			"country":country,
+			"state":state,
+			"hospitalService":services,
+			"hospitalSpeciality":hospitalSpeciality,
+			"hospitalType":hospitalType,
+		})
+	   }
+
+	   exports.updateGeneralClinicContent = (req, res) => {
+		const id = req.params.id;
+		// const{ password} = req.body
+		generalClinicManagement.update( { ...req.body ,
+		}, 
+				 { where: {id: req.params.id} }
+				 ).then(() => {
+				 res.status(200).send({message:"Clinic updated successfully"});
+				 });
+	  };
+	  exports.deleteGeneralClinic = (req, res) => {
+		const id = req.params.id;
+		generalClinicManagement.destroy({
+		  where: { id: id }
+		}).then(() => {
+		  res.status(200).send({message:'Clinic deleted successfully'});
+		});
+	  };
+
+	  exports.getAllGeneralDoctors = (req, res) => {
+		generalDoctorManagement.findAll({
+			where: {role: 'DOCTOR'},
+			order: [
+				[Sequelize.literal('id'), 'desc']
+		 ]
+		}).then(clinic => {
+			res.status(200).json({
+				"description": "DoctorManagement Content Page",
+				"clinic": clinic,
+				
+			});
+		}).catch(err => {
+			res.status(500).json({
+				"description": "Can not access DoctorManagement Page",
+				"error": err
+			});
+		})
+	}
+
+	exports.getGeneralDoctors =  async(req, res) => {
+		const doctor= await	db.generalDoctorManagement.findOne({
+			   where:{id :req.params.id},
+			   })
+		const salutation=await db.salutationMaster.findAll({where:{}});
+		const branch=await db.branchMaster.findAll({where:{}});	
+		const country=await db.country.findAll({where:{}});	
+		const state=await db.state.findAll({where:{}});	
+	
+			   return res.json({"doctor":doctor,"salutation":salutation,
+			   "branch":branch,
+				"country":country,
+				"state":state,
+			})
+		   }	
+		   exports.updateGeneralDoctors = (req, res) => {
+			const id = req.params.id;
+			const{ password} = req.body
+			generalDoctorManagement.update( { ...req.body ,
+			}, 
+					 { where: {id: req.params.id} }
+					 ).then(() => {
+					 res.status(200).send({message:"Doctor updated successfully"});
+					 });
+		  };
+		  exports.deleteGeneralDoctors = (req, res) => {
+			const id = req.params.id;
+			DoctorManagement.destroy({
+			  where: { id: id }
+			}).then(() => {
+			  res.status(200).send({message:'Doctor deleted successfully'});
+			});
+		  };
+/////////////////////////////////////////////////////////////////

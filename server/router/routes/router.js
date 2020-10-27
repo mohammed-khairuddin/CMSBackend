@@ -137,5 +137,27 @@ app.get('/api/auth/getreferralcomment/:patientId',controller.getAllReferralComme
 
 app.get('/api/auth/getallhospitalclinicfetch/',controller.getAllHostipalClinicSubFetch)
 
+///////////////////////////// GENERAL CLINIC DOCTOR APIS/////////////////////
+
+// CLINIC
+app.get('/api/auth/generalclinic', controller.getGeneralAllClinics);
+app.get('/api/test/generalclinic/:id', controller.getGeneralClinics);
+app.put('/api/auth/updategeneralclinic/:id',  controller.updateGeneralClinicContent);
+app.delete('/api/auth/deletegeneralclinic/:id',  controller.deleteGeneralClinic);
+
+//app.get('/api/test/user', [authJwt.verifyToken], controller.clinicContent);
+
+// DOCTOR
+app.get('/api/auth/generaldoctor', controller.getAllGeneralDoctors);
+app.get('/api/test/generaldoctor/:id', controller.getGeneralDoctors);
+app.delete('/api/auth/deletegeneraldoctor/:id',  controller.deleteGeneralDoctors);
+app.put('/api/auth/updategeneraldoctor/:id',  controller.updateGeneralDoctors);
+
+
+app.get('/api/auth/doctors/:clinicId',controller.doctors)
+
+
+
+
 
 }

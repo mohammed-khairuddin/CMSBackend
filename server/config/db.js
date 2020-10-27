@@ -89,7 +89,17 @@ db.country = require('../models/countrymaster')(sequelize, Sequelize);
 db.referralcomment = require('../models/referralcomment')(sequelize, Sequelize);
 db.complains = require('../models/complains')(sequelize, Sequelize);
 
+////////////////////////////
 
+db.generalClinicManagement = require('../models/generalClinicManagement.js')(sequelize, Sequelize);
+db.generalDoctorManagement = require('../models/generalDoctorManagement.js')(sequelize, Sequelize);
+
+db.services = require('../models/services')(sequelize, Sequelize);
+db.speciality = require('../models/speciality')(sequelize, Sequelize);
+db.branches = require('../models/branches')(sequelize, Sequelize);
+
+
+/////////////////////////////////////////////////
 db.patientMaster=require('../models/patientMaster')(sequelize, Sequelize);
 db.kinMaster = require('../models/kinmaster')(sequelize, Sequelize);
 

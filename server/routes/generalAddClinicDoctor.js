@@ -7,17 +7,15 @@
  const UUID = require('uuid-generate')
  // const req['uniqueId'] = UUID.generate()
  var dicomParser = require('../../node_modules/dicom-parser/dist/dicomParser');
- const ClinicManagement = db.clinicManagement;
- const DoctorManagement = db.doctorManagement
+ const ClinicManagement = db.generalClinicManagement;
+ const DoctorManagement = db.generalDoctorManagement
  // Load in Rusha so we can calculate sha1 hashes
   var Rusha = require('../../node_modules/rusha/dist/rusha');
   const ejs = require("ejs");
   const axios = require('axios');
   var https = require('https')
 
-  const nodemailer = require('nodemailer');
-const services = require('../models/services');
-const speciality = require('../models/speciality');
+  const nodemailer = require('nodemailer')
  
  
  const app = express()
@@ -102,20 +100,12 @@ const speciality = require('../models/speciality');
        
      var Upload = Imagesupload.fields([{ name: 'profileImage', maxCount: 1 }, { name: 'logoImage', maxCount: 1 }]);
      
-     app.post('/api/auth/registration', Upload,async function  (req,res) {
+     app.post('/api/auth/generalAddClinicDoctor', Upload,async function  (req,res) {
       //app.post('/api/auth/registration', Imagesupload.single('uploadedImage'),async function  (req,res) {
-         const{username,password,role,services,branch,speciality} = req.body;
+         const{username,password,role} = req.body;
 
-         console.log('*********************************');     
-        //  console.log(services[0]);
-        //  console.log(speciality[0]); 
-        console.log(JSON.stringify(req.body.services , null, 2 ) );
-        console.log('++++++++++++');
-
-
-                for(i in req.body.services){
-   console.log(req.body.services[i])
-        }
+        
+   
      if(role === 'CLINIC'){
          
      // console.log(folderName)	
@@ -128,70 +118,25 @@ const speciality = require('../models/speciality');
     if (!usernameIsValid) {
     
     
-      const createclinic=await ClinicManagement.create({
+     
+      
+      ClinicManagement.create({
       ...req.body,
         profileImagesId: `${req['uniqueId']} `,
        logoImagesId: `${req['uniqueId']} `,
  
      
+         }).then(clinicManagement => {
+             console.log(clinicManagement) 
+             //sendEmail("clinicmanagement20@gmail.com,ysrysrysr@gmail.com,Khairuddin@valuedge-solutions.com,rvsairam239@gmail.com")
+             sendEmail("clinicmanagement20@gmail.com,lavanya.thutta@gmail.com")
+             // exit node.js app
+             res.json({'message': 'File uploaded successfully!', 'file': req.file,'user':req.body});
          })
-         if(services)
-         {
-          //console.log
-          console.log('**********************');
-          //									let objlength = Object.keys(conclusionsComments[i]).length
-                let totalCount =  await db.services.findAndCountAll({
-                  where:{
-              clinicId:createclinic.id},
-                  raw:true
-                });
-                console.log(totalCount.count)
-                if(totalCount.count>0){
-              db.services.destroy({where:{
-                          clinicId:createclinic.id}
-              })
-                }
-      
-                // for(i in services){
-                // const createservice=	await db.services.create({
-                //     ...services[i],
-                //     clinicId:createclinic.id
-                //             })
-                        
-          //}
-        
-         }
-         if(speciality)
-         {
-          //console.log
-          //console.log('**********************');
-          //									let objlength = Object.keys(conclusionsComments[i]).length
-                let totalCount =  await db.speciality.findAndCountAll({
-                  where:{
-              clinicId:createclinic.id},
-                  raw:true
-                });
-                console.log(totalCount.count)
-                if(totalCount.count>0){
-              db.speciality.destroy({where:{
-                          clinicId:createclinic.id}
-              })
-                }
-      
-          //       for(i in speciality){
-          //       const createspeciality=	await db.speciality.create({
-          //           ...speciality[i],
-          //           clinicId:createclinic.id
-          //                   })
-                        
-          // }
-        
-         }
-        
-  res.json({'message': 'File uploaded successfully!','user':req.body,'service':services,'speciality':speciality})
+     
  }
  else{
-     return res.status(401).send({ auth: false, accessToken: null, message: "Username already exists!" ,status: 401,ash:req.body  });
+     return res.status(401).send({ auth: false, accessToken: null, message: "Username already exists!" ,status: 401});
  
  }
  }
@@ -209,7 +154,7 @@ const speciality = require('../models/speciality');
              },
              raw:true
          });
-         console.log(totalCount.count)
+         //console.log(totalCount.count)
      
          if(totalCount.count<3){
             
@@ -220,38 +165,14 @@ const speciality = require('../models/speciality');
           logoImagesId: `${req['uniqueId']} `,
  
  
-         })
-         if(braches)
-         {
-          //console.log
-          console.log('**********************');
-          //									let objlength = Object.keys(conclusionsComments[i]).length
-                let totalCount =  await db.branch.findAndCountAll({
-                  where:{
-              docId:createDoctor.id},
-                  raw:true
-                });
-                console.log(totalCount.count)
-                if(totalCount.count>0){
-              db.braches.destroy({where:{
-                          clinicId:createclinic.id}
-              })
-                }
-      
-                for(i in services){
-                const createbranch=	await db.branch.create({
-                    ...branch[i],
-                    docId:createclinic.id
-                            })
-                        
-          }
-         }
+         }).then(doctorManagement => {
+             
          // 	// exit node.js app
          //sendEmail("clinicmanagement20@gmail.com,ysrysrysr@gmail.com,Khairuddin@valuedge-solutions.com,rvsairam239@gmail.com")
          sendEmail("clinicmanagement20@gmail.com,lavanya.thutta@gmail.com")
               res.json({'message': 'File uploaded successfully!','user':req.body,count:totalCount.count});
          
-         
+         })
      
      } else{
       res.json({'message':'cannot enter',count:totalCount.count});

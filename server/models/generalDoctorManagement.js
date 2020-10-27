@@ -1,7 +1,7 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
   const TIMESTAMP = require('sequelize-mysql-timestamp')(sequelize);
-  const DoctorManagement = sequelize.define('doctormanagement', {
+  const generalDoctorManagement = sequelize.define('generaldoctormanagement', {
       name: { 
       type: DataTypes.STRING,
       required: true
@@ -129,5 +129,5 @@ googlemaplocation: {
   {
     underscored: true
   });
-  return DoctorManagement;
+  return generalDoctorManagement;
 };
