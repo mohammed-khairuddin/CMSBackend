@@ -154,10 +154,34 @@ app.delete('/api/auth/deletegeneraldoctor/:id',  controller.deleteGeneralDoctors
 app.put('/api/auth/updategeneraldoctor/:id',  controller.updateGeneralDoctors);
 
 
-app.get('/api/auth/doctors/:clinicId',controller.doctors)
+
+//app.get('/api/auth/doctors/:clinicId',controller.doctors)
+
+///////////////////////////////////////////// Master Tables
+
+app.get('/api/auth/getgeneralmaster/:data',controller.getgeneralmaster)
+app.post('/api/auth/creategeneralmaster/:data',controller.creategeneralmaster)
+app.put('/api/auth/updategeneralmaster/:id/:data',controller.updategeneralmaster)
+app.delete('/api/auth/deletegeneralmaster/:id/:data',controller.deletegeneralmaster)
+app.get('/api/auth/findonegeneralmaster/:id/:data',controller.getonegeneralmaster)
+
+///////////////////family
+app.post('/api/auth/createfamily',controller.createfamily)
+app.put('/api/auth/updatefamily/:id',controller.updatefamily)
+app.delete('/api/auth/deletefamily/:id',controller.deleteFamily)
+app.get('/api/auth/getfamily/:id',controller.getFamily)
+app.get('/api/auth/getallfamily',controller.getallFamily)
+
+/////////////////////other details
+app.post('/api/auth/createotherdetails',controller.createotherdetails)
+app.put('/api/auth/updateotherdetails/:id',controller.updateotherdetails)
+app.delete('/api/auth/deleteotherdetails/:id',controller.deleteotherdetails)
+app.get('/api/auth/getotherdetails/:id',controller.getotherdetails)
+app.get('/api/auth/getallotherdetails',controller.getallotherdetails)
 
 
+app.get('/api/auth/getallclinicdoctorfetch',controller.getAllClinicDoctorFetch)
 
-
+app.get('/api/auth/getalldoctorfetch',controller.getAllDoctorFetch)
 
 }

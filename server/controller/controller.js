@@ -294,16 +294,89 @@ exports.clinicContent = (req, res) => {
 		});
 	})
 }
-exports.updateClinicContent = (req, res) => {
+// exports.updateClinicContent = (req, res) => {
+// 	const id = req.params.id;
+// 	// const{ password} = req.body
+// 	ClinicManagement.update( { ...req.body ,
+// 	}, 
+// 			 { where: {id: req.params.id} }
+// 			 ).then(() => {
+// 			 res.status(200).send({message:"Clinic updated successfully"});
+// 			 });
+//   };
+ 
+exports.updateClinicContent = async(req, res) => {
+	try{
 	const id = req.params.id;
+	const {services,specialities}=req.body
 	// const{ password} = req.body
-	ClinicManagement.update( { ...req.body ,
+	console.log(req.body);
+	console.log('------------------');
+	await ClinicManagement.update( { ...req.body ,
 	}, 
 			 { where: {id: req.params.id} }
-			 ).then(() => {
+			 )
+			 if(services)
+         {
+          //console.log
+          console.log('********');
+         // const serve = JSON.parse(req.body.services)
+          //									let objlength = Object.keys(conclusionsComments[i]).length
+                let totalCount =  await db.services.findAndCountAll({
+                  where:{
+              clinicId:req.params.id},
+                  raw:true
+                });
+                console.log(totalCount.count)
+                if(totalCount.count>0){
+              await db.services.destroy({where:{
+                          clinicId:req.params.id}
+              })
+                }
+      
+                for(i in services){
+                const createservice=	await db.services.create({
+                    ...services[i],
+                    clinicId:req.params.id
+                            })
+                        
+		  }
+		}
+		if(specialities)
+		{
+		 //console.log
+		// const special = JSON.parse(req.body.speciality)
+		 console.log('********');
+		 //									let objlength = Object.keys(conclusionsComments[i]).length
+			   let totalCount =  await db.speciality.findAndCountAll({
+				 where:{
+			 clinicId:req.params.id},
+				 raw:true
+			   });
+			   console.log(totalCount.count)
+			   if(totalCount.count>0){
+			await db.speciality.destroy({where:{
+						 clinicId:req.params.id}
+			 })
+			   }
+	 
+			   for(i in specialities){
+			   const createspeciality=	await db.speciality.create({
+				   ...specialities[i],
+				   clinicId:req.params.id
+						   })
+					   
+		 }
+	   
+		}
 			 res.status(200).send({message:"Clinic updated successfully"});
-			 });
-  };
+			 }	catch(err){
+				console.log(err);
+				return res.send({message:"cannot update"})
+			}
+		}
+
+
   exports.deleteClinic = (req, res) => {
 	const id = req.params.id;
 	ClinicManagement.destroy({
@@ -353,16 +426,46 @@ exports.doctors = (req, res) => {
 		});
 	})
 }
-exports.updateDoctors = (req, res) => {
+exports.updateDoctors = async (req, res) => {
+	try{
 	const id = req.params.id;
-	const{ password} = req.body
+
+	const{ bbranch,password} = req.body
 	DoctorManagement.update( { ...req.body ,
 	}, 
 			 { where: {id: req.params.id} }
-			 ).then(() => {
+			 )
+			 if(bbranch)
+			 {													
+					let totalCount =  await db.branches.findAndCountAll({
+					  where:{
+				  docId:req.params.id},
+					  raw:true
+					});
+					console.log(totalCount.count)
+					if(totalCount.count>0){
+				 await db.branches.destroy({where:{
+							docId:req.params.id}
+				  })
+					}
+		 
+					for(i in bbranch){
+						
+					const createbranch=	await db.branches.create({
+						...bbranch[i],
+						docId:req.params.id
+								})
+							
+			  }
+			 }
+	 
 			 res.status(200).send({message:"Doctor updated successfully"});
-			 });
-  };
+
+  }catch{
+	  
+  }
+}
+
   exports.deleteDoctors = (req, res) => {
 	const id = req.params.id;
 	DoctorManagement.destroy({
@@ -825,19 +928,27 @@ exports.getClinics =  async(req, res) => {
 	const doctor= await	db.clinicManagement.findOne({
 		   where:{id :req.params.id},
 		   })
-		
-	const country=await db.country.findAll({where:{}});	
-	const state=await db.state.findAll({where:{}});	
-	const services = await db.hospitalService.findAll({where:{}});
-	const hospitalSpeciality = await db.hospitalSpeciality.findAll({where:{}});
-	const hospitalType = await db.hospitalType.findAll({where:{}});
-		   return res.json({"doctor":doctor,
-			"country":country,
-			"state":state,
-			"hospitalService":services,
-			"hospitalSpeciality":hospitalSpeciality,
-			"hospitalType":hospitalType,
-		})
+		const bindService = await db.services.findAll({where:{clinicId:req.params.id}});
+		const bindSpeciality = await db.speciality.findAll({where:{clinicId:req.params.id}});
+	
+		return res.json({"doctor":doctor,
+		"services":bindService,
+		"speciality":bindSpeciality,
+	})
+	// const country=await db.country.findAll({where:{}});	
+	// const state=await db.state.findAll({where:{}});	
+	// const services = await db.hospitalService.findAll({where:{}});
+	// const hospitalSpeciality = await db.hospitalSpeciality.findAll({where:{}});
+	// const hospitalType = await db.hospitalType.findAll({where:{}});
+		//    return res.json({"doctor":doctor,
+		// 	// "country":country,
+		// 	// "state":state,
+		// 	// "hospitalService":services,
+		// 	// "hospitalSpeciality":hospitalSpeciality,
+		// 	// "hospitalType":hospitalType,
+		// 	"services":bindService,
+		// 	"speciality":bindSpeciality
+		// })
 	   }
 
 
@@ -867,15 +978,18 @@ exports.getDoctors =  async(req, res) => {
 	const doctor= await	db.doctorManagement.findOne({
 		   where:{id :req.params.id},
 		   })
-	const salutation=await db.salutationMaster.findAll({where:{}});
-	const branch=await db.branchMaster.findAll({where:{}});	
-	const country=await db.country.findAll({where:{}});	
-	const state=await db.state.findAll({where:{}});	
+	const bindBranches = await db.branches.findAll({where:{docId:req.params.id}});
+	//const bindSpeciality = await db.speciality.findAll({where:{clinicId:req.params.id}});
+	
+		   
+	// const salutation=await db.salutationMaster.findAll({where:{}});
+	// const branch=await db.branchMaster.findAll({where:{}});	
+	// const country=await db.country.findAll({where:{}});	
+	// const state=await db.state.findAll({where:{}});	
 
-		   return res.json({"doctor":doctor,"salutation":salutation,
-		   "branch":branch,
-			"country":country,
-			"state":state,
+		   return res.json({"doctor":doctor,
+		   "bindBranches":bindBranches,
+			
 		})
 	   }
 
@@ -967,26 +1081,43 @@ exports.patientMaster = async(req, res) => {
 // }
 }
 
+exports.findPatientMaster =  async(req, res) => {
+	
+	const patient=await db.patientMaster.findAll({where:{}});
+	const doctor=await db.doctorManagement.findAll({where:{}});
+	 const clinic=await db.clinicManagement.findAll({where:{}});	
+	
+		   return res.json({
+		   "doctor":doctor,
+		   "user":patient,
+		   "clinic":clinic,
+		})
+	   }	
 
-exports.findPatientMaster = (req, res) => {
-	db.patientMaster.findAll({
-	where:{},
-	order: [
-		[Sequelize.literal('id'), 'desc']
- ]
-	}).then(patient => {
-		res.status(200).json({
-			"description": "patient Page",
-			"user": patient,
+
+
+// exports.findPatientMaster = (req, res) => {
+// 	db.patientMaster.findAll({
+// 	where:{},
+// 	order: [
+// 		[Sequelize.literal('id'), 'desc']
+//  ]
+// 	}).then(patient => {
+// 		res.status(200).json({
+// 			"description": "patient Page",
+// 			"user": patient,
 			
-		});
-	}).catch(err => {
-		res.status(500).json({
-			"description": "Can not access patient Page",
-			"error": err
-		});
-	})
-}
+// 		});
+// 	}).catch(err => {
+// 		res.status(500).json({
+// 			"description": "Can not access patient Page",
+// 			"error": err
+// 		});
+// 	})
+// }
+
+
+
 exports.findOnePatientMaster =  async(req, res) => {
  const patient= await	db.patientMaster.findOne({
 		where:{id :req.params.id},
@@ -2320,4 +2451,358 @@ exports.getGeneralClinics =  async(req, res) => {
 			  res.status(200).send({message:'Doctor deleted successfully'});
 			});
 		  };
+
+
+//////////////////////////////////
+
+///////////general new masters
+
+exports.getgeneralmaster = (req,res) => {
+	data = req.params;
+	console.log(req.params.data);
+	const d = db[(req.params.data)];
+	console.log('----------------------------')
+	d.findAll({
+		where: {},
+			}).then(master => {
+		res.status(200).json({ 
+			
+			"master": master
+		});
+	}).catch(err => {
+		res.status(500).json({
+		
+			"description": "Can not access master Page",
+			"error": err
+		});
+	})
+}
+exports.creategeneralmaster = (req,res) => {
+	data = req.params;
+	console.log(req.params.data);
+	const d = db[(req.params.data)];
+	console.log('----------------------------')
+	d.create({
+		...req.body
+			}).then(master => {
+		res.status(200).json({ 
+			message:"master created successfully",
+			"master": master,
+			status:200
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"description": "Can not access master Page",
+			"error": err
+		});
+	})
+}
+exports.updategeneralmaster = (req,res) => {
+	data = req.params;
+	console.log(req.params.data);
+	const d = db[(req.params.data)];
+	console.log('----------------------------')
+	d.update({
+		...req.body},
+		{ where: {id: req.params.id} }
+			).then(master => {
+		res.status(200).json({ 
+			message:"master updated successfully",
+			"master": master,
+			status:200
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"description": "Can not access master Page",
+			"error": err
+		});
+	})
+}
+exports.deletegeneralmaster = (req,res) => {
+	data = req.params;
+	console.log(req.params.data);
+	const d = db[(req.params.data)];
+	console.log('----------------------------')
+	d.destroy(
+		{ where: {id: req.params.id} }
+			).then(master => {
+		res.status(200).json({ 
+			message:"master deleted successfully",
+			"master": master,
+			status:200
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"description": "Can not access master Page",
+			"error": err
+		});
+	})
+}
+
+exports.getonegeneralmaster = (req,res) => {
+	data = req.params;
+	console.log(req.params.data);
+	const d = db[(req.params.data)];
+	console.log('----------------------------')
+	d.findOne({
+		where:{id:req.params.id},
+			}).then(master => {
+		res.status(200).json({ 
+			
+			"master": master,
+			status:200
+		});
+	}).catch(err => {
+		res.status(500).json({
+		
+			"description": "Can not access master Page",
+			"error": err
+		});
+	})
+}
+
+
+/////////////////////////////////family
+exports.createfamily = async(req, res) => {
+	await db.familymodel.create({
+		...req.body,
+	}).then(family => {
+		res.status(200).json({
+			"message": "family created",
+			"user": family,
+			status:200
+			
+		})
+	}).catch(err => {
+		res.status(500).json({
+			"message": "Can not access family Page",
+			"error": err,
+			status:500
+		});
+	})
+}
+exports.updatefamily = async(req, res) => {
+	const id = req.params.id;
+	// const{ password} = req.body
+	console.log(req.body);
+	db.familymodel.update( { ...req.body ,
+	}, 
+			 { where: {id: req.params.id} }
+			 ).then(family => {
+				res.status(200).json({
+					"message": "family updated successfully",
+					"user": family,
+					status:200
+					
+				})
+			}).catch(err => {
+				res.status(500).json({
+					"message": "Can not access family Page",
+					"error": err,
+					status:500
+				});
+			})
+  };
+  exports.deleteFamily = (req, res) => {
+	const id = req.params.id;
+	db.familymodel.destroy({
+	  where: { id: id }
+	}).then(family => {
+		res.status(200).json({
+			"message": "family deleted successfully",
+			"user": family,
+			status:200
+			
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"message": "Can not delete family",
+			"error": err,
+			status:500
+		});
+	})
+  };
+  exports.getFamily = (req, res) => {
+	db.familymodel.findOne({
+		where: {id : req.params.id},	
+	}).then(family => {
+		res.status(200).json({
+			"message": "family",
+			"user": family,
+			status:200
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"message": "Can get family",
+			"error": err,
+			status:500
+		});
+	})
+}
+exports.getallFamily = (req, res) => {
+	db.familymodel.findAll({
+		where: {},	
+	}).then(family => {
+		res.status(200).json({
+			"message": "family",
+			"user": family,
+			status:200
+		})
+	}).catch(err => {
+		res.status(500).json({
+			"message": "Can get family",
+			"error": err,
+			status:500
+		});
+	})
+}
+
+/////////////////////////////////otherdetails
+exports.createotherdetails = async(req, res) => {
+	await db.otherdetails.create({
+		...req.body,
+	}).then(otherdetails => {
+		res.status(200).json({
+			"message": "otherdetails created",
+			"user": otherdetails,
+			status:200
+			
+		})
+	}).catch(err => {
+		res.status(500).json({
+			"message": "Can not access otherdetails Page",
+			"error": err,
+			status:500
+		});
+	})
+}
+exports.updateotherdetails = async(req, res) => {
+	const id = req.params.id;
+	// const{ password} = req.body
+	db.otherdetails.update( { ...req.body ,
+	}, 
+			 { where: {id: req.params.id} }
+			 ).then(otherdetails => {
+				res.status(200).json({
+					"message": "otherdetails updated successfully",
+					"user": otherdetails,
+					status:200
+					
+				})
+			}).catch(err => {
+				res.status(500).json({
+					"message": "Can not access otherdetails Page",
+					"error": err,
+					status:500
+				});
+			})
+  };
+  exports.deleteotherdetails = (req, res) => {
+	const id = req.params.id;
+	db.otherdetails.destroy({
+	  where: { id: id }
+	}).then(otherdetails => {
+		res.status(200).json({
+			"message": "otherdetails deleted successfully",
+			"user": otherdetails,
+			status:200
+			
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"message": "Can not delete otherdetails",
+			"error": err,
+			status:500
+		});
+	})
+  };
+  exports.getotherdetails = (req, res) => {
+	db.otherdetails.findOne({
+		where: {id : req.params.id},	
+	}).then(otherdetails => {
+		res.status(200).json({
+			"message": "otherdetails",
+			"user": otherdetails,
+			status:200
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"message": "Can get otherdetails",
+			"error": err,
+			status:500
+		});
+	})
+}
+exports.getallotherdetails = async(req, res) => {
+	
+	const getalldetails=await db.otherdetails.findAll({
+		where: {},
+		
+	}).then(otherdetails => {
+
+	//console.log(getalldetails)
+		res.status(200).json({
+			"message": "otherdetails",
+			"user": otherdetails,
+			status:200,
+		})
+		
+	
+	}).catch(err => {
+		res.status(500).json({
+			"message": "Can get otherdetails",
+			"error": err,
+			status:500
+		});
+	})
+
+	
+}
+
+
+
+exports.getAllClinicDoctorFetch = async(req, res) => {
+	try{
+		
+		const country = await db.country.findAll({where:{}});
+		const state = await db.state.findAll({where:{}});	
+	const services = await db.hospitalService.findAll({where:{}});
+	const hospitalSpeciality = await db.hospitalSpeciality.findAll({where:{}});
+	const hospitalType = await db.hospitalType.findAll({where:{}});
+
+		return res.send({
+		"country":country,
+		"state":state,
+		"hospitalService":services,
+			"hospitalSpeciality":hospitalSpeciality,
+			"hospitalType":hospitalType,
+		})
+			}
+			catch{err => {
+				res.status(500).send('Error -> ' + err);
+			}}
+	
+}
+
+exports.getAllDoctorFetch = async(req, res) => {
+	try{
+		
+		const country = await db.country.findAll({where:{}});
+		const state = await db.state.findAll({where:{}});	
+		const branch = await db.branchMaster.findAll({where:{}});
+		const salutation = await db.salutationMaster.findAll({where:{}});
+ 
+		return res.send({
+		"country":country,
+		"state":state,
+		"branches":branch,
+		"salutation":salutation,
+		})
+			}
+			catch{err => {
+				res.status(500).send('Error -> ' + err);
+			}}
+	
+}
+
 /////////////////////////////////////////////////////////////////

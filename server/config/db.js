@@ -89,6 +89,10 @@ db.country = require('../models/countrymaster')(sequelize, Sequelize);
 db.referralcomment = require('../models/referralcomment')(sequelize, Sequelize);
 db.complains = require('../models/complains')(sequelize, Sequelize);
 
+db.otherdetails = require('../models/otherdetails')(sequelize, Sequelize);
+db.familymodel = require('../models/familymodel')(sequelize, Sequelize);
+
+
 ////////////////////////////
 
 db.generalClinicManagement = require('../models/generalClinicManagement.js')(sequelize, Sequelize);
