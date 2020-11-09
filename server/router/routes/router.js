@@ -165,6 +165,13 @@ app.put('/api/auth/updategeneralmaster/:id/:data',controller.updategeneralmaster
 app.delete('/api/auth/deletegeneralmaster/:id/:data',controller.deletegeneralmaster)
 app.get('/api/auth/findonegeneralmaster/:id/:data',controller.getonegeneralmaster)
 
+//////////////////////////
+// app.get('/api/auth/getmaster/:data',controller.getallotherdetailsmaster)
+// app.post('/api/auth/createmaster/:data',controller.createotherdetailsmaster)
+// app.put('/api/auth/updatemaster/:id/:data',controller.updateotherdetailsmaster)
+// app.delete('/api/auth/deletemaster/:id/:data',controller.deleteotherdetailsmaster)
+// app.get('/api/auth/findonemaster/:id/:data',controller.getotherdetailsmaster)
+
 ///////////////////family
 app.post('/api/auth/createfamily',controller.createfamily)
 app.put('/api/auth/updatefamily/:id',controller.updatefamily)

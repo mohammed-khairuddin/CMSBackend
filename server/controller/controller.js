@@ -2733,7 +2733,7 @@ exports.updateotherdetails = async(req, res) => {
 		});
 	})
 }
-exports.getallotherdetails = async(req, res) => {
+exports.getallotherdetails1 = async(req, res) => {
 	
 	const getalldetails=await db.otherdetails.findAll({
 		where: {},
@@ -2759,6 +2759,44 @@ exports.getallotherdetails = async(req, res) => {
 	
 }
 
+exports.getallotherdetails = async(req, res) => {
+	const otherdetails=await db.otherdetails.findAll({
+		where: {},	
+		raw:true
+	})
+
+	const doctor = otherdetails.map(async data =>{
+		const doctorListRelatedToPatient=await DoctorManagement.findAll({
+		where: {id: data.refferedby},
+		raw: true,
+		order: [
+				[Sequelize.literal('id'), 'desc']
+		]
+	 })
+	 const doc = await Promise.all(doctorListRelatedToPatient)
+	 console.log((doc))
+	 const clinicListRelatedToPatient = await db.clinicManagement.findAll({
+		where:{id:data.nameofclinic}
+
+	 })
+	const clinic = await Promise.all(clinicListRelatedToPatient)
+	const patientListRelatedToOtherDetails = await db.patientMaster.findAll({
+		where:{id:data.patientId}
+
+	 })
+	const patient = await Promise.all(patientListRelatedToOtherDetails)
+	return {...data,clinicList:clinic,doctorList:doc,patientList:patient}
+	})
+  const clinicDashboardData = await Promise.all(doctor)
+
+
+return res.status(200).json({
+user: clinicDashboardData,
+
+})
+
+		
+}
 
 
 exports.getAllClinicDoctorFetch = async(req, res) => {
@@ -2806,3 +2844,106 @@ exports.getAllDoctorFetch = async(req, res) => {
 }
 
 /////////////////////////////////////////////////////////////////
+
+///////////////////////////////////masters
+exports.createotherdetailsmaster = (req,res) => {
+	data = req.params;
+	console.log(req.params.data);
+	const d = db[(req.params.data)];
+	console.log('----------------------------')
+	d.create({
+		...req.body
+			}).then(master => {
+		res.status(200).json({ 
+			message:"master created successfully",
+			"master": master,
+			status:200
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"description": "Can not access master Page",
+			"error": err
+		});
+	})
+}
+exports.updateotherdetailsmaster = (req,res) => {
+	data = req.params;
+	console.log(req.params.data);
+	const d = db[(req.params.data)];
+	console.log('----------------------------')
+	d.update({
+		...req.body},
+		{ where: {id: req.params.id} }
+			).then(master => {
+		res.status(200).json({ 
+			message:"master updated successfully",
+			"master": master,
+			status:200
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"description": "Can not access master Page",
+			"error": err
+		});
+	})
+}
+exports.deleteotherdetailsmaster = (req,res) => {
+	data = req.params;
+	console.log(req.params.data);
+	const d = db[(req.params.data)];
+	console.log('----------------------------')
+	d.destroy(
+		{ where: {id: req.params.id} }
+			).then(master => {
+		res.status(200).json({ 
+			message:"master deleted successfully",
+			"master": master,
+			status:200
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"description": "Can not access master Page",
+			"error": err
+		});
+	})
+}
+
+exports.getotherdetailsmaster = (req,res) => {
+	data = req.params;
+	console.log(req.params.data);
+	const d = db[(req.params.data)];
+	console.log('----------------------------')
+	d.findOne({
+		where:{id:req.params.id},
+			}).then(master => {
+		res.status(200).json({ 
+			
+			"master": master,
+			status:200
+		});
+	}).catch(err => {
+		res.status(500).json({
+		
+			"description": "Can not access master Page",
+			"error": err
+		});
+	})
+}
+exports.getallotherdetailsmaster = (req,res) => {
+	data = req.params;
+	console.log(req.params.data);
+	const d = db[(req.params.data)];
+	console.log('----------------------------')
+	d.findAll({
+		where: {},
+			}).then(master => {
+		res.status(200).json({ 
+			"master": master
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"description": "Can not access master Page",
+			"error": err
+		});
+	})
+}

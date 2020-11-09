@@ -134,6 +134,7 @@ var dicomupload = multer({ errorHandling: 'manual' , storage: dicomImageStorage 
       }
       })
       let patientObj = {};
+   
       
       dataSet_list.map(data => {
         patientObj.name = data.string('x00100010');
