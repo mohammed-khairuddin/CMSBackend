@@ -1961,7 +1961,7 @@ console.log(req.body.type);
 	
 	
 	const {selectedObservations,observations,conclusions,doctorAdvice,impressions,conclusionsComments,doctorAdviceComments, impressionComments,comments,relativewall,speckleTracking} = req.body;
-		
+		console.log(req.body)
 			try { 
 				if (selectedObservations) {
 					console.log('******');
@@ -2564,6 +2564,8 @@ exports.getonegeneralmaster = (req,res) => {
 
 /////////////////////////////////family
 exports.createfamily = async(req, res) => {
+	// console.log(req.body);
+	// console.log('-----------');
 	await db.familymodel.create({
 		...req.body,
 	}).then(family => {
