@@ -2949,3 +2949,92 @@ exports.getallotherdetailsmaster = (req,res) => {
 		});
 	})
 }
+
+///////////////////////////// Life Style Form 
+
+exports.lifestyle = async(req, res) => {
+	//const lifestyle = req.body
+	//console.log(lifestyle);
+	// const ls = JSON.stringify(lifestyle);
+	// console.log(ls)
+	console.log('--------------');
+	
+	try{
+	const lifestyle1=await db.lifestyle.create({
+		lifestyle:req.body
+	})
+		return res.status(200).json({
+	lifestyle:lifestyle1
+})}
+catch(err){
+//res.status(404)({message:"can't create lifestyle"})
+console.log(err)
+}		
+}
+
+
+exports.updatelifestyle = async(req, res) => {
+try{
+const lifestyle=await db.lifestyle.update({
+...req.body
+}	,{where:{id:req.params.id}})
+
+return res.status(200).json({
+lifestyle:lifestyle
+})}
+catch(err){
+res.json(404)({message:"can't update lifestyle"})
+console.log(err)
+}		
+}
+
+
+exports.deletelifestyle = async(req, res) => {
+try{
+const lifestyle=await db.lifestyle.destroy({where:{id:req.params.id}})
+//const lifestyle2=await db.lifestyle2.destroy({where:{id:req.params.id}})
+return res.status(200).json({
+lifestyle:lifestyle
+})}
+catch(err){
+res.json(404)({message:"can't delete lifestyle"})
+console.log(err)
+}		
+}
+
+
+exports.getlifestyle = async(req, res) => {
+try{
+const lifestyle=await db.lifestyle.findOne({where:{id:req.params.id},raw:true})
+//const lifestyle2=await db.lifestyle2.findOne({where:{id:req.params.id},raw:true})
+return res.status(200).json({
+lifestyle:lifestyle
+})
+}
+catch(err){
+res.json(404)({message:"can't find lifestyle"})
+console.log(err)
+}		
+}
+
+exports.getalllifestyle = async(req, res) => {
+try{
+const lifestyle=await db.lifestyle.findAll({
+where: {},	
+raw:true
+})
+// for(i in lifestyle)
+// console.log(lifestyle[i].lifeStyle.emphysema)
+//console.log(lifestyle
+return res.status(200).json({
+user: lifestyle,
+
+})
+}
+catch(err){
+// res.json(404)({message:"can't find lifestyle"})
+console.log(err)
+}		
+}
+
+//////////////////////////////////

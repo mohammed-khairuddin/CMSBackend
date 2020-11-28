@@ -3,7 +3,7 @@
 const env = {
   // PORT: process.env.PORT || 8082,
   // DATABASE_URL: process.env.DATABASE_URL || 'localhost',
-  DATABASE_NAME: process.env.DATABASE_NAME || 'test',
+  DATABASE_NAME: process.env.DATABASE_NAME || 'cm',
   DATABASE_HOST: process.env.DATABASE_HOST || 'localhost',
   DATABASE_USERNAME: process.env.DATABASE_USERNAME || 'root',
   DATABASE_PASSWORD: process.env.DATABASE_PASSWORD || 'root',

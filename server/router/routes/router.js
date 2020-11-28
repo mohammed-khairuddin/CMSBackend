@@ -191,4 +191,13 @@ app.get('/api/auth/getallclinicdoctorfetch',controller.getAllClinicDoctorFetch)
 
 app.get('/api/auth/getalldoctorfetch',controller.getAllDoctorFetch)
 
+
+//////////////////////////Life Style Form
+
+app.post('/api/auth/lifestyle',controller.lifestyle)
+app.put('/api/auth/updatelifestyle/:id',controller.updatelifestyle)
+app.delete('/api/auth/deletelifestyle/:id',controller.deletelifestyle)
+app.get('/api/auth/getlifestyle/:id',controller.getlifestyle)
+app.get('/api/auth/getalllifestyle',controller.getalllifestyle)
+
 }

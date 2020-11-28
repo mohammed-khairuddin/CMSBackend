@@ -1,7 +1,7 @@
 'use strict'
 
 const Sequelize = require('sequelize');
-const env = require('./env');
+const env = require('./../../.env');
 const sequelize = new Sequelize(env.DATABASE_NAME, env.DATABASE_USERNAME, env.DATABASE_PASSWORD, {
   host: env.DATABASE_HOST,
   port: env.DATABASE_PORT,
@@ -91,7 +91,7 @@ db.complains = require('../models/complains')(sequelize, Sequelize);
 
 db.otherdetails = require('../models/otherdetails')(sequelize, Sequelize);
 db.familymodel = require('../models/familymodel')(sequelize, Sequelize);
-
+db.lifestyle = require('../models/lifestyle')(sequelize, Sequelize);
 
 ////////////////////////////
 
