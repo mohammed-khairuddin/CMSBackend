@@ -924,32 +924,85 @@ exports.getPatient = (req, res) => {
 // 	})
 // }
 
-exports.getClinics =  async(req, res) => {
-	const doctor= await	db.clinicManagement.findOne({
-		   where:{id :req.params.id},
-		   })
+// exports.getClinics =  async(req, res) => {
+// 	const doctor= await	db.clinicManagement.findOne({
+// 		   where:{id :req.params.id},
+// 		   })
+// 		const bindService = await db.services.findAll({where:{clinicId:req.params.id}});
+// 		const bindSpeciality = await db.speciality.findAll({where:{clinicId:req.params.id}});
+	
+// 		return res.json({"doctor":doctor,
+// 		"services":bindService,
+// 		"speciality":bindSpeciality,
+// 	})
+	
+// 	   }
+
+exports.getClinics = async(req, res) => {
+	try{
+	const clinic = await ClinicManagement.findOne({
+		where: {id :req.params.id},
+		raw:true
+	})		
 		const bindService = await db.services.findAll({where:{clinicId:req.params.id}});
 		const bindSpeciality = await db.speciality.findAll({where:{clinicId:req.params.id}});
 	
-		return res.json({"doctor":doctor,
-		"services":bindService,
-		"speciality":bindSpeciality,
-	})
-	// const country=await db.country.findAll({where:{}});	
-	// const state=await db.state.findAll({where:{}});	
-	// const services = await db.hospitalService.findAll({where:{}});
-	// const hospitalSpeciality = await db.hospitalSpeciality.findAll({where:{}});
-	// const hospitalType = await db.hospitalType.findAll({where:{}});
-		//    return res.json({"doctor":doctor,
-		// 	// "country":country,
-		// 	// "state":state,
-		// 	// "hospitalService":services,
-		// 	// "hospitalSpeciality":hospitalSpeciality,
-		// 	// "hospitalType":hospitalType,
-		// 	"services":bindService,
-		// 	"speciality":bindSpeciality
-		// })
-	   }
+	const folder = clinic.profileImagesId
+console.log(folder)
+	if(!fs.existsSync(`./profileImages/${folder}`)) { 
+		fs.mkdir(`./profileImages/${folder}`, {recursive:true}, (err)=>{
+		  if (err) {
+			console.log("Children directory issue")
+			return cb(null, false, new Error('Something Went wrong,please try again')); 
+		  } 
+		})
+	  }
+	const folders  = fs.readdirSync(`./profileImages/${folder}`);
+	console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+console.log(folders)
+	const generate=await folders.map(async data => {
+		// console.log(data)
+		const imageToBase64 = require('image-to-base64');
+		const gen = await imageToBase64(`./profileImages/${folder}/${data}`)
+		// console.log(gen)
+		console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+		return (gen)
+	});
+	 const g = await Promise.all(generate)
+//////////////////////////////////
+	 const logoFolder = clinic.logoImagesId
+//console.log(folder)
+	if(!fs.existsSync(`./profileImages/${logoFolder}`)) { 
+		fs.mkdir(`./profileImages/${logoFolder}`, {recursive:true}, (err)=>{
+		  if (err) {
+			console.log("Children directory issue")
+			return cb(null, false, new Error('Something Went wrong,please try again')); 
+		  } 
+		})
+	  }
+	const logoFolders  = fs.readdirSync(`./profileImages/${logoFolder}`);
+	console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+// console.log(logoFolders)
+	const logoimg=await logoFolders.map(async data => {
+		console.log(data)
+		const imageToBase64 = require('image-to-base64');
+		const logo = await imageToBase64(`./profileImages/${logoFolder}/${data}`)
+		//console.log(gen)
+		console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+		return (logo)
+	});
+	 const logoImages = await Promise.all(logoimg)
+ return res.json({"message":"clinic content page",
+doctor:clinic,
+"services":bindService,
+"speciality":bindSpeciality,
+profileimage:g,
+logoimage:logoImages})
+	}
+	catch(err){
+		console.log(err)
+	}
+}
 
 
 // exports.getDoctors = (req, res) => {
@@ -3073,12 +3126,15 @@ console.log(err)
 	/// INVESTIGATION Reports
 //////////////////////////////////////////////
 	exports.investigation = async(req, res) => {
+		console.log('............');
+		console.log(req.body);
 		try{
-		const investigationreport=await db.investigationreport.create({
-			investigationrepot:req.body
+		const investigationreport1=await db.investigationreport.create({
+			investigationreport:req.body
 		})
 			return res.status(200).json({
-		investigationreport:investigationreport
+				message:"success",
+		investigationreport:investigationreport1
 })}
 catch(err){
 	res.status(404)({message:"can't create investigationreport"})
@@ -3116,7 +3172,7 @@ try{
 const investigationreport=await db.investigationreport.findOne({where:{id:req.params.id},raw:true})
 //const lifestyle2=await db.lifestyle2.findOne({where:{id:req.params.id},raw:true})
 	return res.status(200).json({
-		investigationreport:investigationreport
+		investigationreport:investigationreport.investigationreport
 })
 }
 catch(err){
