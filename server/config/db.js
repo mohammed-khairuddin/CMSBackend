@@ -92,6 +92,15 @@ db.complains = require('../models/complains')(sequelize, Sequelize);
 db.otherdetails = require('../models/otherdetails')(sequelize, Sequelize);
 db.familymodel = require('../models/familymodel')(sequelize, Sequelize);
 db.lifestyle = require('../models/lifestyle')(sequelize, Sequelize);
+db.investigationreport = require('../models/investigationreport')(sequelize, Sequelize);
+
+
+//////////////////////////////////////////masters
+db.durationMaster = require('../models/durationmaster')(sequelize, Sequelize);
+db.tabletsMaster = require('../models/tabletsMaster')(sequelize, Sequelize);
+db.periodMaster = require('../models/periodMaster')(sequelize, Sequelize);
+db.syrupMaster = require('../models/syrupMaster')(sequelize, Sequelize);
+
 
 ////////////////////////////
 

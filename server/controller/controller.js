@@ -1829,6 +1829,7 @@ exports.Observation = async(req,res,next) =>{
 		})
 	}
 	
+
 // exports.findAllObservations = async(req, res) => {
 // 	try{
 // 		let formatedfinalList = []
@@ -1845,6 +1846,7 @@ exports.Observation = async(req,res,next) =>{
 // 	 const doctorAdviceComments = await db.doctorAdviceComments.findAll({where:{patientId:req.params.patientId}})
 // 	 const speckletrackingreport = await db.speckletrackingreport.findAll({where:{patientId:req.params.patientId}})	 	 
 // 	 const regionalWall = await db.regionalwallmotion.findAll({where:{patientId:req.params.patientId}})
+// 	 const referralcomment = await db.referralcomment.findAll({where:{patientId:req.params.patientId}})
 // 	return res.send({observations:observations,
 // 		masterData:masterTablesData,
 // 		 observationItem:observationItem,
@@ -1856,7 +1858,8 @@ exports.Observation = async(req,res,next) =>{
 // 		doctorAdvicereport:doctorAdvicereport,
 // 		doctorAdviceComments:doctorAdviceComments,
 // 		regionalWall:regionalWall,
-// 		speckleTrackingreport:speckletrackingreport
+// 		speckleTrackingreport:speckletrackingreport,
+// 		referralcomment:referralcomment
 // 	})
 // }catch{
 // 	return res.send({})
@@ -1880,6 +1883,29 @@ exports.findAllObservations = async(req, res) => {
 	 const speckletrackingreport = await db.speckletrackingreport.findAll({where:{patientId:req.params.patientId}})	 	 
 	 const regionalWall = await db.regionalwallmotion.findAll({where:{patientId:req.params.patientId}})
 	 const referralcomment = await db.referralcomment.findAll({where:{patientId:req.params.patientId}})
+
+	const folder = req.params.patientId
+
+	if(!fs.existsSync(`./profileImages/${folder}`)) { 
+		fs.mkdir(`./profileImages/${folder}`, {recursive:true}, (err)=>{
+		  if (err) {
+			console.log("Children directory issue")
+			return cb(null, false, new Error('Something Went wrong,please try again')); 
+		  } 
+		})
+	  }
+	const folders  = fs.readdirSync(`./profileImages/${folder}`);
+
+	const generate=await folders.map(async data => {
+		//console.log(data)
+		const imageToBase64 = require('image-to-base64');
+		const gen = await imageToBase64(`./profileImages/${folder}/${data}`)
+		//console.log(gen)
+		console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+		return (gen)
+	});
+	 const g = await Promise.all(generate)
+
 	return res.send({observations:observations,
 		masterData:masterTablesData,
 		 observationItem:observationItem,
@@ -1892,9 +1918,13 @@ exports.findAllObservations = async(req, res) => {
 		doctorAdviceComments:doctorAdviceComments,
 		regionalWall:regionalWall,
 		speckleTrackingreport:speckletrackingreport,
-		referralcomment:referralcomment
+		referralcomment:referralcomment,
+		gen:g
 	})
-}catch{
+
+
+}catch(err){
+	console.log(err)
 	return res.send({})
 }
 }
@@ -2974,9 +3004,11 @@ console.log(err)
 
 
 exports.updatelifestyle = async(req, res) => {
+	console.log(req.body);
+	console.log('................');
 try{
 const lifestyle=await db.lifestyle.update({
-...req.body
+	lifestyle:req.body
 }	,{where:{id:req.params.id}})
 
 return res.status(200).json({
@@ -3008,7 +3040,7 @@ try{
 const lifestyle=await db.lifestyle.findOne({where:{id:req.params.id},raw:true})
 //const lifestyle2=await db.lifestyle2.findOne({where:{id:req.params.id},raw:true})
 return res.status(200).json({
-lifestyle:lifestyle
+lifestyle:lifestyle.lifestyle
 })
 }
 catch(err){
@@ -3038,3 +3070,77 @@ console.log(err)
 }
 
 //////////////////////////////////
+	/// INVESTIGATION Reports
+//////////////////////////////////////////////
+	exports.investigation = async(req, res) => {
+		try{
+		const investigationreport=await db.investigationreport.create({
+			investigationrepot:req.body
+		})
+			return res.status(200).json({
+		investigationreport:investigationreport
+})}
+catch(err){
+	res.status(404)({message:"can't create investigationreport"})
+	console.log(err)
+}		
+}
+exports.updateinvestigationreport = async(req, res) => {
+try{
+const investigationreport=await db.investigationreport.update({
+	investigationreport:req.body
+}	,{where:{id:req.params.id}})
+
+	return res.status(200).json({
+		investigationreport:investigationreport
+})}
+catch(err){
+res.json(404)({message:"can't update investigationreport"})
+console.log(err)
+}		
+}
+exports.deleteinvestigationreport = async(req, res) => {
+try{
+const investigationreport=await db.investigationreport.destroy({where:{id:req.params.id}})
+//const lifestyle2=await db.lifestyle2.destroy({where:{id:req.params.id}})
+	return res.json({
+		"message":"investigationreport sucesssfully deleted",status:200
+})}
+catch(err){
+	//res.json(404)({message:"can't delete investigationreport"})
+	console.log(err)
+}		
+}
+exports.getinvestigationreport = async(req, res) => {
+try{
+const investigationreport=await db.investigationreport.findOne({where:{id:req.params.id},raw:true})
+//const lifestyle2=await db.lifestyle2.findOne({where:{id:req.params.id},raw:true})
+	return res.status(200).json({
+		investigationreport:investigationreport
+})
+}
+catch(err){
+res.json(404)({message:"can't find investigationreport"})
+console.log(err)
+}		
+}
+exports.getallinvestigationreport = async(req, res) => {
+try{
+const investigationreport=await db.investigationreport.findAll({
+	where: {},	
+	raw:true
+})
+
+return res.status(200).json({
+	investigationreport:investigationreport,
+
+})
+}
+catch(err){
+res.json({message:"can't find investigationreport"})
+console.log(err)
+}		
+}
+
+//////////////////////////////////////////
+

@@ -200,4 +200,16 @@ app.delete('/api/auth/deletelifestyle/:id',controller.deletelifestyle)
 app.get('/api/auth/getlifestyle/:id',controller.getlifestyle)
 app.get('/api/auth/getalllifestyle',controller.getalllifestyle)
 
+
+///////////////////////////Investigation Report 
+
+app.post('/api/auth/investigationreport',controller.investigation)
+app.put('/api/auth/updateinvestigationreport/:id',controller.updateinvestigationreport)
+app.delete('/api/auth/deleteinvestigationreport/:id',controller.deleteinvestigationreport)
+app.get('/api/auth/getinvestigationreport/:id',controller.getinvestigationreport)
+app.get('/api/auth/getallinvestigationreport',controller.getallinvestigationreport)
+
+//////////////////////////////////////
+
 }
+
