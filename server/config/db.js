@@ -100,6 +100,8 @@ db.durationMaster = require('../models/durationmaster')(sequelize, Sequelize);
 db.tabletsMaster = require('../models/tabletsMaster')(sequelize, Sequelize);
 db.periodMaster = require('../models/periodMaster')(sequelize, Sequelize);
 db.syrupMaster = require('../models/syrupMaster')(sequelize, Sequelize);
+db.regimeMaster = require('../models/regimeMaster')(sequelize, Sequelize);
+db.medicineMaster = require('../models/medicinemaster')(sequelize, Sequelize);
 
 
 ////////////////////////////

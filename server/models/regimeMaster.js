@@ -2,11 +2,11 @@
 
 module.exports = (sequelize, DataTypes) => {
     const TIMESTAMP = require('sequelize-mysql-timestamp')(sequelize);
-    const country= sequelize.define('country', {   
+    const RegimeMaster= sequelize.define('RegimeMaster', {   
       itemName: {
         type: DataTypes.STRING,
        required: true
-        }  
+        }       
       });
-    return country;
+    return RegimeMaster;
   };

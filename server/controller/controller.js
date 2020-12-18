@@ -12,7 +12,7 @@ const PatientMaster = db.patientMaster;
 const KinMaster = db.kinMaster;
 const Observations = db.observations;
 const salutationMaster = db.salutationMaster;
-
+//const imageToBase64 = require('image-to-base64');
 const generalClinicManagement = db.generalClinicManagement;
 const generalDoctorManagement = db.generalDoctorManagement;
 
@@ -53,6 +53,7 @@ const { loginLookUp, doctorManagement, impressionreport } = require('../config/d
 const clinicManagement = require('../models/clinicManagement');
 const { send } = require('process');
 const complains = require('../models/complains');
+const medicineMaster = require('../models/medicineMaster');
  
 exports.registration = async(req, res) => {
 
@@ -906,6 +907,49 @@ exports.getPatient = (req, res) => {
 		});
 	})
 }
+
+
+exports.getPatientPrescription1 = (req, res) => {
+	//const tabletslist = await db.tabletsMaster.findAll({where:{}});
+
+	Patient.findOne({
+		where: {id :req.params.id},
+		
+	}).then(doctor => {
+		res.status(200).json({
+			"description": "Patient Content Page",
+			"doctor": doctor,
+			//"tabletslist":tabletslist,
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"description": "Can not access Patient Page",
+			"error": err
+		});
+	})
+}
+
+exports.getPatientPrescription =  async(req, res) => {
+	const Patient= await	db.patientmodel.findOne({
+		   where:{id :req.params.id},
+		   })
+	const tabletslist = await db.tabletsMaster.findAll({where:{}});
+	const regimelist = await db.regimeMaster.findAll({where:{}});
+	const durationlist = await db.durationMaster.findAll({where:{}});			   
+	const medicinelist = await db.medicineMaster.findAll({where:{}});	
+
+		   return res.json({
+			"description": "Patient Content Page",
+			"patient": Patient,
+			"tabletslist":tabletslist,
+			"regimelist":regimelist,
+			"durationlist":durationlist,
+			"medicinelist":medicinelist,
+		})
+
+	   }
+
+///////////////////////////////
 
 // exports.getClinics = (req, res) => {
 // 	ClinicManagement.findOne({
@@ -1958,6 +2002,12 @@ exports.findAllObservations = async(req, res) => {
 		return (gen)
 	});
 	 const g = await Promise.all(generate)
+	 const file = await db.patientmodel.findOne({where:{id:req.params.patientId},raw:true})
+	 console.log(file)
+	 //const measurement = await JSON.parse(fs.readFileSync(`./profileImages/${file.dicomImagesId}.json`))
+
+	 const measurement = await JSON.parse(fs.readFileSync(`./profileImages/${file.dicomImagesId}.txt`));
+
 
 	return res.send({observations:observations,
 		masterData:masterTablesData,
@@ -1972,7 +2022,8 @@ exports.findAllObservations = async(req, res) => {
 		regionalWall:regionalWall,
 		speckleTrackingreport:speckletrackingreport,
 		referralcomment:referralcomment,
-		gen:g
+		gen:g,
+		measurement:measurement
 	})
 
 
@@ -3198,5 +3249,120 @@ console.log(err)
 }		
 }
 
-//////////////////////////////////////////
+////////////////////////////////////////// Medicine Masters
+
+
+
+exports.medicineMaster = async(req, res) => {
+	
+	await db.medicineMaster.create({
+		...req.body,
+	}).then(medicinemaster => {
+		res.status(200).json({
+			"message": "medicinemaster created",
+			"medicinemaster": medicinemaster,
+			status:200
+			
+		})
+	}).catch(err => {
+		res.status(500).json({
+			"message": "Can not access family Page",
+			"error": err,
+			status:500
+		});
+	})
+}
+
+//////////
+exports.findMedicineMaster = (req, res) => {
+	db.medicineMaster.findAll({
+	where:{},
+	order: [
+		[Sequelize.literal('id'), 'desc']
+ ]
+	}).then(medicinemaster => {
+		res.status(200).json({
+			"description": "medicinemaster Page",
+			"medicinemaster": medicinemaster,
+			status:200
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"description": "Can not access medicinemaster Page",
+			"error": err,
+			status:500
+		});
+	})
+}
+exports.findOneMedicineMaster = (req, res) => {
+	db.medicineMaster.findOne({
+		where: {id :req.params.id},
+		
+	}).then(medicinemaster => {
+		res.status(200).json({
+			"description": "Medicine Master Content Page",
+			"medicinemaster": medicinemaster,
+			status:200
+		});
+	}).catch(err => {
+		res.status(500).json({
+			"description": "Can not access Patient Page",
+			"error": err,
+			status:500
+		});
+	})
+}
+exports.updateMedicineMaster1 = (req, res) => {
+	const id = req.params.id;
+	// const{ password} = req.body
+
+	MedicineMaster.update( { ...req.body ,
+	}, 
+			 { where: {id: req.params.id} }
+			 ).then(medicinemaster => {
+				res.status(200).json({
+					"description": "Medicine Master updated",
+					status:200
+					
+				});
+			}).catch(err => {
+				res.status(500).json({
+					"description": "Can not update Medicine Master",
+					"error": err,
+					status:500
+				});
+			})
+}
+
+exports.updateMedicineMaster = async(req, res) => {
+	const id = req.params.id;
+	// const{ password} = req.body
+	db.medicineMaster.update( { ...req.body ,
+	}, 
+			 { where: {id: req.params.id} }
+			 ).then(medicinemaster => {
+				res.status(200).json({
+					"message": "medicinemaster updated successfully",
+					"medicinemaster": medicinemaster,
+					status:200
+					
+				})
+			}).catch(err => {
+				res.status(500).json({
+					"message": "Can not access otherdetails Page",
+					"error": err,
+					status:500
+				});
+			})
+  };
+
+
+exports.deleteMedicine = (req, res) => {
+	const id = req.params.id;
+	MedicineMaster.destroy({
+	  where: { id: id }
+	}).then(() => {
+	  res.status(200).send({message:'Medicine deleted successfully'});
+	});
+  };
 

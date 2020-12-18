@@ -209,7 +209,17 @@ app.delete('/api/auth/deleteinvestigationreport/:id',controller.deleteinvestigat
 app.get('/api/auth/getinvestigationreport/:id',controller.getinvestigationreport)
 app.get('/api/auth/getallinvestigationreport',controller.getallinvestigationreport)
 
-//////////////////////////////////////
+///////////////////////////Medicine Master 
+
+app.post('/api/auth/insertmedicinemaster',controller.medicineMaster)
+app.put('/api/auth/updatemedicinemaster/:id',controller.updateMedicineMaster)
+app.delete('/api/auth/deletemedicine/:id',controller.deleteMedicine)
+app.get('/api/auth/getmedicinemaster/:id',controller.findOneMedicineMaster)
+app.get('/api/auth/getallmedicinemaster',controller.findMedicineMaster)
+
+////////////////////////////////////// Prescription
+
+app.get('/api/findOne/prescriptiondetails/:id',controller.getPatientPrescription)
 
 }
 
